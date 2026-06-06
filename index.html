@@ -14,6 +14,21 @@
   {"@context":"https://schema.org","@type":"LocalBusiness","name":"Pack City Pressure Washing","telephone":"(775) 560-4277","address":{"@type":"PostalAddress","addressLocality":"Reno","addressRegion":"NV","addressCountry":"US"},"aggregateRating":{"@type":"AggregateRating","ratingValue":"5.0","reviewCount":"10"}}
   </script>
   <style>
+    /* ── Intro Animation ── */
+    #intro{position:fixed;inset:0;z-index:9999;background:#0a1628;display:flex;align-items:center;justify-content:center;flex-direction:column;will-change:opacity}
+    #intro.is-exiting{animation:introFadeOut 0.7s ease-in forwards}
+    @keyframes introFadeOut{from{opacity:1}to{opacity:0}}
+    .intro-logo-wrap{position:relative;display:flex;align-items:center;justify-content:center}
+    .intro-logo{width:clamp(180px,40vw,300px);border-radius:12px;opacity:0;transform:scale(0.78);animation:logoIn 0.9s cubic-bezier(0.16,1,0.3,1) 0.3s forwards;filter:drop-shadow(0 0 40px rgba(0,112,224,0.5))}
+    @keyframes logoIn{to{opacity:1;transform:scale(1)}}
+    .intro-logo-wrap::after{content:'';position:absolute;inset:0;background:linear-gradient(105deg,transparent 30%,rgba(255,255,255,0.18) 50%,transparent 70%);background-size:200% 100%;animation:shimmer 1.2s ease-out 0.9s forwards;opacity:0;pointer-events:none}
+    @keyframes shimmer{0%{opacity:1;background-position:-100% 0}100%{opacity:0;background-position:200% 0}}
+    .intro-glow{position:absolute;width:clamp(240px,52vw,400px);height:clamp(240px,52vw,400px);border-radius:50%;background:radial-gradient(circle,rgba(0,112,224,0.22) 0%,transparent 70%);opacity:0;animation:glowPulse 1.4s ease-out 0.3s forwards;pointer-events:none}
+    @keyframes glowPulse{0%{opacity:0;transform:scale(0.6)}40%{opacity:1}100%{opacity:0;transform:scale(1.5)}}
+    .intro-tagline{font-size:clamp(10px,2vw,13px);font-weight:700;letter-spacing:0.22em;text-transform:uppercase;color:#0070e0;opacity:0;transform:translateY(10px);animation:tagIn 0.6s cubic-bezier(0.16,1,0.3,1) 1.05s forwards;margin-top:20px}
+    @keyframes tagIn{to{opacity:1;transform:translateY(0)}}
+    @media(prefers-reduced-motion:reduce){#intro{display:none!important}}
+    /* ── End Intro ── */
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
     :root{
       --navy:#0a1628;
@@ -215,6 +230,15 @@
   </style>
 </head>
 <body>
+
+<!-- ── Intro Animation ── -->
+<div id="intro" aria-hidden="true" role="presentation">
+  <div class="intro-logo-wrap">
+    <div class="intro-glow"></div>
+    <img class="intro-logo" src="assets/PACK-CITY LOGO.jpg" alt="Pack City" width="300" height="200" />
+  </div>
+  <div class="intro-tagline">Pressure Washing &amp; Window Cleaning</div>
+</div>
 
 <!-- ── Announcement Bar ── -->
 <div class="ann">
@@ -692,6 +716,23 @@
     entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('visible');obs.unobserve(e.target);}});
   },{threshold:0.1});
   document.querySelectorAll('.reveal').forEach(el=>obs.observe(el));
+
+  /* ── Intro Animation ── */
+  (function(){
+    var intro = document.getElementById('intro');
+    if (!intro) return;
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      intro.remove(); return;
+    }
+    setTimeout(function() {
+      intro.classList.add('is-exiting');
+      intro.addEventListener('animationend', function() {
+        intro.remove();
+      }, { once: true });
+      // Safety fallback
+      setTimeout(function(){ if (intro.parentNode) intro.remove(); }, 1000);
+    }, 2400);
+  })();
 </script>
 </body>
 </html>
